@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>مدقق المقالات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F2EEE4;
+    --ink: #232017;
+    --ink-soft: #5b5648;
+    --rule: #d8d1bf;
+    --accent: #9c3b2e;
+    --accent-soft: #c9745f;
+    --high: #9c3b2e;
+    --medium: #b8821f;
+    --low: #6b6555;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    min-height: 100vh;
+  }
+  .masthead {
+    border-bottom: 3px solid var(--ink);
+    padding: 28px 24px 16px;
+    text-align: center;
+  }
+  .masthead h1 {
+    font-family: "Markazi Text", serif;
+    font-weight: 700;
+    font-size: clamp(34px, 6vw, 52px);
+    margin: 0;
+    letter-spacing: 0.5px;
+  }
+  .masthead .rule-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  .masthead .rule-line::before,
+  .masthead .rule-line::after {
+    content: "";
+    height: 1px;
+    width: 40px;
+    background: var(--rule);
+  }
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+  .editor-card {
+    background: #fffdf8;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    box-shadow: 0 1px 0 var(--rule);
+  }
+  textarea {
+    width: 100%;
+    min-height: 280px;
+    border: none;
+    background: transparent;
+    padding: 22px;
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    font-size: 18px;
+    line-height: 1.9;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+  }
+  textarea::placeholder { color: #a39d8a; }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 22px;
+    border-top: 1px solid var(--rule);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .wordcount { font-size: 13px; color: var(--ink-soft); }
+  button.audit-btn {
+    background: var(--accent);
+    color: #fffdf8;
+    border: none;
+    padding: 13px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease;
+    min-height: 48px;
+  }
+  button.audit-btn:active { background: #7c2e24; }
+  button.audit-btn:disabled { background: #b9a99f; cursor: default; }
+
+  #status {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 18px 0;
+    min-height: 18px;
+  }
+  #summary {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 24px 0 12px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+  }
+  .issue {
+    background: #fffdf8;
+    border: 1px solid var(--rule);
+    border-right: 5px solid var(--low);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    border-radius: 2px;
+  }
+  .issue.high { border-right-color: var(--high); }
+  .issue.medium { border-right-color: var(--medium); }
+  .issue.low { border-right-color: var(--low); }
+  .issue .type {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .issue .orig {
+    text-decoration: line-through;
+    color: #8a3a30;
+    font-size: 16px;
+    margin-bottom: 6px;
+    line-height: 1.7;
+  }
+  .issue .sugg {
+    color: #1f5c44;
+    font-weight: 600;
+    font-size: 17px;
+    margin-bottom: 8px;
+    line-height: 1.7;
+  }
+  .issue .expl {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .empty {
+    text-align: center;
+    color: var(--ink-soft);
+    padding: 40px 0;
+    font-size: 15px;
+  }
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <h1>مدقق المقالات</h1>
+  <div class="rule-line">تدقيق صحفي بالذكاء الاصطناعي</div>
+</div>
+
+<main>
+  <div class="editor-card">
+    <textarea id="text-input" placeholder="ألصق نص مقالك هنا..."></textarea>
+    <div class="toolbar">
+      <span class="wordcount" id="wordcount">٠ كلمة</span>
+      <button class="audit-btn" id="audit-btn">تدقيق المقال</button>
+    </div>
+  </div>
+
+  <div id="status"></div>
+  <div id="summary" style="display:none;"></div>
+  <div id="results"></div>
+</main>
+
+<footer>الأداة تدقق اللغة فقط، ولا تتحقق من صحة المعلومات</footer>
+
+<script>
+const textInput = document.getElementById("text-input");
+const wordcount = document.getElementById("wordcount");
+const auditBtn = document.getElementById("audit-btn");
+const statusEl = document.getElementById("status");
+const summaryEl = document.getElementById("summary");
+const resultsEl = document.getElementById("results");
+
+function arabicNumber(n) {
+  return n.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+}
+
+textInput.addEventListener("input", () => {
+  const words = textInput.value.trim().split(/\s+/).filter(Boolean).length;
+  wordcount.textContent = arabicNumber(words) + " كلمة";
+});
+
+const typeLabels = {
+  grammar: "قواعد ونحو",
+  hamza: "همزات",
+  style: "أسلوب",
+  repetition: "تكرار / اختيار كلمات",
+  translation_feel: "بنية مترجمة",
+};
+
+function escapeHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+auditBtn.addEventListener("click", async () => {
+  const text = textInput.value.trim();
+  resultsEl.innerHTML = "";
+  summaryEl.style.display = "none";
+
+  if (!text) {
+    statusEl.textContent = "الرجاء كتابة أو لصق نص أولاً.";
+    return;
+  }
+
+  auditBtn.disabled = true;
+  statusEl.textContent = "جاري التدقيق... قد يستغرق هذا بضع ثوانٍ.";
+
+  try {
+    const res = await fetch("/api/audit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+
+    statusEl.textContent = "";
+
+    if (data.error) {
+      summaryEl.style.display = "block";
+      summaryEl.textContent = "خطأ: " + data.error;
+      return;
+    }
+
+    renderIssues(data.issues || []);
+  } catch (err) {
+    statusEl.textContent = "";
+    summaryEl.style.display = "block";
+    summaryEl.textContent = "تعذر الاتصال بالخادم. تحقق من اتصالك بالإنترنت.";
+  } finally {
+    auditBtn.disabled = false;
+  }
+});
+
+function renderIssues(issues) {
+  summaryEl.style.display = "block";
+  resultsEl.innerHTML = "";
+
+  if (issues.length === 0) {
+    summaryEl.textContent = "لم يتم العثور على مشاكل.";
+    resultsEl.innerHTML = '<div class="empty">✓ النص نظيف</div>';
+    return;
+  }
+
+  summaryEl.textContent = `تم العثور على ${arabicNumber(issues.length)} ملاحظة`;
+
+  issues.forEach(issue => {
+    const div = document.createElement("div");
+    div.className = "issue " + (issue.severity || "low");
+    div.innerHTML = `
+      <div class="type">${typeLabels[issue.type] || issue.type}</div>
+      <div class="orig">${escapeHtml(issue.original)}</div>
+      <div class="sugg">← ${escapeHtml(issue.suggestion)}</div>
+      <div class="expl">${escapeHtml(issue.explanation)}</div>
+    `;
+    resultsEl.appendChild(div);
+  });
+}
+</script>
+</body>
+</html>
